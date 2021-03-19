@@ -5,7 +5,7 @@ import java.util.Objects;
 public class Quaternion {
 
    //checklist 5
-   public static final double ALPHA = 0.00001; //Treshold for checking zero
+   public static final double ALPHA = 0.0000000000000001; //Treshold for checking zero
    public static final double BETA = 1000000.0; //for rounding
 
    private double a, b, c, d;
@@ -50,7 +50,7 @@ public class Quaternion {
       return a;
    }
 
-   /** Imaginary part i of the quaternion. 
+   /** Imaginary part i of the quaternion.
     * @return imaginary part i
     */
    public double getIpart() {
@@ -58,7 +58,7 @@ public class Quaternion {
       return b;
    }
 
-   /** Imaginary part j of the quaternion. 
+   /** Imaginary part j of the quaternion.
     * @return imaginary part j
     */
    public double getJpart() {
@@ -66,7 +66,7 @@ public class Quaternion {
       return c;
    }
 
-   /** Imaginary part k of the quaternion. 
+   /** Imaginary part k of the quaternion.
     * @return imaginary part k
     */
    public double getKpart() {
@@ -75,7 +75,7 @@ public class Quaternion {
    }
 
    /** Conversion of the quaternion to the string.
-    * @return a string form of this quaternion: 
+    * @return a string form of this quaternion:
     * "a+bi+cj+dk"
     * (without any brackets)
     */
@@ -115,9 +115,9 @@ public class Quaternion {
    }
 
 
-   /** Conversion from the string to the quaternion. 
+   /** Conversion from the string to the quaternion.
     * Reverse to <code>toString</code> method.
-    * @throws IllegalArgumentException if string s does not represent 
+    * @throws IllegalArgumentException if string s does not represent
     *     a quaternion (defined by the <code>toString</code> method)
     * @param s string of form produced by the <code>toString</code> method
     * @return a quaternion represented by string s
@@ -132,6 +132,7 @@ public class Quaternion {
       //delete white space before classified as not quaternion
 
       s = s.replaceAll("\\s+","");
+      String original = s;
 
       if(s.equals("") ){
          throw new IllegalArgumentException("The given string does not represent a quaternion: empty string ");
@@ -192,25 +193,34 @@ public class Quaternion {
 
 
          String[] letters = s.split("/");
-         for(String c : letters){
-            if(c.charAt(c.length()-1) == 'i'){
-               i = Double.parseDouble(c.substring(0,c.length()-1));
-            }
-            else if(c.charAt(c.length()-1) == 'j'){
-               j = Double.parseDouble(c.substring(0,c.length()-1));
-            }
-            else if(c.charAt(c.length()-1) == 'k'){
-               k = Double.parseDouble(c.substring(0,c.length()-1));
-            }
-            else{
-               r = Double.parseDouble(c);
+
+         try{
+
+            for(String c : letters){
+               if(c.charAt(c.length()-1) == 'i'){
+                  i = Double.parseDouble(c.substring(0,c.length()-1));
+               }
+               else if(c.charAt(c.length()-1) == 'j'){
+                  j = Double.parseDouble(c.substring(0,c.length()-1));
+               }
+               else if(c.charAt(c.length()-1) == 'k'){
+                  k = Double.parseDouble(c.substring(0,c.length()-1));
+               }
+               else{
+                  r = Double.parseDouble(c);
+               }
             }
          }
+
+         catch (NumberFormatException e){
+            throw new IllegalArgumentException("The given string does not represent a quaternion " + original);
+         }
+
 
          return new Quaternion(r, i, j, k);
       }
       else{
-         throw new IllegalArgumentException("The given string does not represent a quaternion " + s);
+         throw new IllegalArgumentException("The given string does not represent a quaternion " + original);
       }
    }
 
@@ -225,12 +235,12 @@ public class Quaternion {
       return new Quaternion(a, b, c, d); // TODO!!! // TODO!!!
    }
 
-//   https://stackoverflow.com/questions/18260213/how-to-test-if-a-double-is-zero/18260267
+   //   https://stackoverflow.com/questions/18260213/how-to-test-if-a-double-is-zero/18260267
    private boolean isZero(double k){
       return k>= -ALPHA && k <= ALPHA;
    }
 
-   /** Test whether the quaternion is zero. 
+   /** Test whether the quaternion is zero.
     * @return true, if the real part and all the imaginary parts are (close to) zero
     * @param
     */
@@ -239,7 +249,7 @@ public class Quaternion {
 
    }
 
-   /** Conjugate of the quaternion. Expressed by the formula 
+   /** Conjugate of the quaternion. Expressed by the formula
     *     conjugate(a+bi+cj+dk) = a-bi-cj-dk
     * @return conjugate of <code>this</code>
     */
@@ -247,7 +257,7 @@ public class Quaternion {
       return new Quaternion(a, -b,-c,-d); // TODO!!!
    }
 
-   /** Opposite of the quaternion. Expressed by the formula 
+   /** Opposite of the quaternion. Expressed by the formula
     *    opposite(a+bi+cj+dk) = -a-bi-cj-dk
     * @return quaternion <code>-this</code>
     */
@@ -255,7 +265,7 @@ public class Quaternion {
       return new Quaternion(-a,-b,-c,-d); // TODO!!!
    }
 
-   /** Sum of quaternions. Expressed by the formula 
+   /** Sum of quaternions. Expressed by the formula
     *    (a1+b1i+c1j+d1k) + (a2+b2i+c2j+d2k) = (a1+a2) + (b1+b2)i + (c1+c2)j + (d1+d2)k
     * @param q addend
     * @return quaternion <code>this+q</code>
@@ -294,7 +304,7 @@ public class Quaternion {
 //   source: https://introcs.cs.princeton.edu/java/32class/Quaternion.java.html
 
    /** Inverse of the quaternion. Expressed by the formula
-    *     1/(a+bi+cj+dk) = a/(a*a+b*b+c*c+d*d) + 
+    *     1/(a+bi+cj+dk) = a/(a*a+b*b+c*c+d*d) +
     *     ((-b)/(a*a+b*b+c*c+d*d))i + ((-c)/(a*a+b*b+c*c+d*d))j + ((-d)/(a*a+b*b+c*c+d*d))k
     * @return quaternion <code>1/this</code>
     */
@@ -353,7 +363,7 @@ public class Quaternion {
       }
       return (q.inverse()).times(this);
    }
-   
+
    /** Equality test of quaternions. Difference of equal numbers
     *     is (close to) zero.
     * @param qo second quaternion
@@ -369,7 +379,8 @@ public class Quaternion {
 
          return true;
       }
-      return this.toString().equals(qo.toString());
+//      return this.toString().equals(qo.toString());
+      return this.minus(((Quaternion) qo)).isZero();
    }
 
    /** Dot product of quaternions. (p*conjugate(q) + q*conjugate(p))/2
@@ -389,7 +400,7 @@ public class Quaternion {
       return Objects.hash(a, b, c, d); // TODO!!!
    }
 
-   /** Norm of the quaternion. Expressed by the formula 
+   /** Norm of the quaternion. Expressed by the formula
     *     norm(a+bi+cj+dk) = Math.sqrt(a*a+b*b+c*c+d*d)
     * @return norm of <code>this</code> (norm is a real number)
     */
@@ -397,10 +408,20 @@ public class Quaternion {
       return round(Math.sqrt(a*a + b*b + c*c + d*d));  // TODO!!!
    }
 
-   /** Main method for testing purposes. 
+   /** Main method for testing purposes.
     * @param arg command line parameters
     */
    public static void main (String[] arg) {
+
+//      System.out.println(valueOf("-2.1e-2-3.2e-1i-4.3e+2j-5.4k"));
+
+      System.out.println(valueOf("-2.1 - 3.2i -4.3j -5.4k")); //should evaluete to "-0.021-0.32i-430.0j-540.0k".
+      System.out.println(valueOf("-2.1e-2-3.2e-1i-4.3e+2j-5.4e2kk")); //should cause exception.
+      System.out.println(valueOf("-2.1e-2-3.2e-1i-4.3e+2j-5.4e2k+"));// should cause exception.
+
+      Quaternion test1 = new Quaternion(0.2,4,5,8);
+      Quaternion test2 = new Quaternion(0.2,4,5,8);
+      System.out.println(test1.equals(test2));
       Quaternion arv1 = new Quaternion (-1., 1, 2., -2.);
       if (arg.length > 0)
          arv1 = valueOf (arg[0]);
@@ -421,7 +442,7 @@ public class Quaternion {
       System.out.println ("clone is not the same object: " + (res!=arv1));
       System.out.println ("hashCode: " + res.hashCode());
       res = valueOf (arv1.toString());
-      System.out.println ("string conversion equals to original: " 
+      System.out.println ("string conversion equals to original: "
          + res.equals (arv1));
       Quaternion arv2 = new Quaternion (1., -2.,  -1., 2.);
       if (arg.length > 1)
